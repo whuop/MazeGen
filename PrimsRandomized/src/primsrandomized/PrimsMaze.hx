@@ -12,7 +12,9 @@ typedef MazeNode =
 	up : Bool,
 	down : Bool,
 	left : Bool,
-	right : Bool
+	right : Bool,
+	x : Int,
+	y : Int
 };
 
 class PrimsMaze
@@ -29,29 +31,76 @@ class PrimsMaze
 		m_openList = new Array<MazeNode>();
 		m_maze = new Vector<MazeNode>(options.width * options.height);
 
-		for( i in 0...m_openList.length )
+
+		for( x in 0...options.width )
 		{
-			m_maze[i] = { up : false, down : false, left : false, right : false};
+			for ( y in 0...options.height )
+			{
+				m_maze[i] = { up : false, down : false, left : false, right : false, x : x, y : y};
+			}
 		}
 	}
 
-	public function createMaze()
+	public function createMaze() : Void
 	{
 		//	Get a random position to start the maze at.
 		var randomX : Int = Std.random(m_options.width);
 		var randomY : Int = Std.random(m_options.height);
-		makeNeighborsOpen(randomX, randomY);
+		makeNeighboursOpen(randomX, randomY);
 
-
+		var i : Int = 0;
 		//	While there are still nodes to visit
 		while ( m_openList.length > 0)
 		{
+			//	Pick random node
+			var node = m_openList.remove(m_openList[Std.random(m_openList.length)]);
 
+
+			trace("I: " + i);
+			i++;
 		}
 	}
 
-	private function makeNeighborsOpen(x : Int, y : Int)
+	private function openWall(ax : Int, ay : Int, bx : Int, by : Int) : Void
 	{
+		
+	}
 
+	private function makeNeighboursOpen(x : Int, y : Int) : Void
+	{
+		x--;
+		if ( insideBounds(x , y) )
+			makeDistinctNeighbourOpen(x , y);
+
+		x++;
+		y--;
+		if ( insideBounds(x , y) )
+			makeDistinctNeighbourOpen(x , y);
+
+		y++;
+		y++;
+		if ( insideBounds(x , y) )
+			makeDistinctNeighbourOpen(x , y);
+
+		y--;
+		x++;
+		if ( insideBounds(x , y) )
+			makeDistinctNeighbourOpen(x , y);
+	}
+
+	private function makeDistinctNeighbourOpen(x : Int, y : Int) : Void
+	{
+		m_openList.remove(m_maze[y * m_options.width + x]);
+		m_openList.push(m_maze[y * m_options.width + x]);
+	}
+
+	private function insideBounds(x : Int, y : Int) : Bool
+	{
+		if ( x < 0 || x >= m_options.width)
+			return false;
+		else if ( y < 0 || y >= m_options.height )
+			return false;
+
+		return true;
 	}
 }
