@@ -20,7 +20,6 @@ typedef MazeNode =
 class PrimsMaze
 {
 	private var m_openList : Array<MazeNode>;
-
 	private var m_maze : Vector<MazeNode>;
 
 	private var m_options : PrimzMazeOptions;
@@ -36,7 +35,7 @@ class PrimsMaze
 		{
 			for ( y in 0...options.height )
 			{
-				m_maze[i] = { up : false, down : false, left : false, right : false, x : x, y : y};
+				m_maze[y * options.width + x] = { up : false, down : false, left : false, right : false, x : x, y : y};
 			}
 		}
 	}
@@ -63,7 +62,7 @@ class PrimsMaze
 
 	private function openWall(ax : Int, ay : Int, bx : Int, by : Int) : Void
 	{
-		
+
 	}
 
 	private function makeNeighboursOpen(x : Int, y : Int) : Void
