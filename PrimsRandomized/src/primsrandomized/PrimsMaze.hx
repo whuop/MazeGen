@@ -1,0 +1,6 @@
+package primsrandomized;
+
+class PrimzMaze
+{
+	
+}
