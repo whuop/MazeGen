@@ -1,0 +1,25 @@
+{
+
+  project : {
+    name : 'Prims Randomized',
+    version : '1.0.0',
+    author : 'Kristian Brodal',
+
+    app : {
+      name : 'prims_randomized',
+      package : 'org.brodal.lsystems'
+    },
+
+    build : {
+      dependencies : {
+        luxe : '*',
+      }
+    },
+
+    files : {
+      assets : 'assets/'
+    }
+
+  }
+
+}
