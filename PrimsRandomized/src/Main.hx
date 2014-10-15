@@ -1,5 +1,6 @@
 import luxe.Input;
 import primsrandomized.PrimsMaze;
+import renderers.MazeRenderer;
 
 class Main extends luxe.Game 
 {
@@ -7,6 +8,8 @@ class Main extends luxe.Game
     {
         var prims = new PrimsMaze( { width : 10, height : 10 } );
         prims.createMaze();
+
+        MazeRenderer.CreateGeometry(prims);
     } //ready
 
     override function onkeyup( e:KeyEvent ) 
