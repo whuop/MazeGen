@@ -22,11 +22,17 @@ class PrimsMaze
 {
 	private var m_openList : Array<MazeNode>;
 	private var m_closedList : Array<MazeNode>;
+
 	private var m_maze : Vector<MazeNode>;
+	public var maze(get, never) : Vector<MazeNode>;
+	private function get_maze() : Vector<MazeNode> { return m_maze; }
 
 	private var m_options : PrimzMazeOptions;
+	public var options(get,set) : PrimzMazeOptions;
+	private function get_options() : PrimzMazeOptions { return m_options; }
+	private function set_options(v : PrimzMazeOptions) : PrimzMazeOptions { return m_options = v; }
 
-	public function new(options : PrimzMazeOptions)
+	public function new(options : PrimzMazeOptions) : Void
 	{
 		m_options = options;
 		m_openList = new Array<MazeNode>();
@@ -62,29 +68,29 @@ class PrimsMaze
 			makeNeighboursOpen(node);
 
 
-			trace("I: " + i);
+			trace( "NodeX: " + node.x + " NodeY: " + node.y + " I: " + i);
 			i++;
 		}
 	}
 
 	private function openWall(nodeA : MazeNode, nodeB : MazeNode) : Void
 	{
-		if ( nodeA.x < nodeB.x )
+		if ( nodeA.x < nodeB.x && nodeA.y == nodeB.y )
 		{
 			nodeA.right = true;
 			nodeB.left = true;
 		}
-		else if (  nodeA.x > nodeB.x )
+		else if (  nodeA.x > nodeB.x && nodeA.y == nodeB.y )
 		{
 			nodeA.left = true;
 			nodeB.right = true;
 		}
-		else if ( nodeA.y < nodeB.y )
+		else if ( nodeA.y < nodeB.y && nodeA.x == nodeB.x )
 		{
 			nodeA.down = true;
 			nodeB.up = true;
 		}
-		else if ( nodeA.y > nodeB.y )
+		else if ( nodeA.y > nodeB.y && nodeA.x == nodeB.x )
 		{
 			nodeA.up = true;
 			nodeB.down = true;
@@ -96,15 +102,18 @@ class PrimsMaze
 		var x = node.x;
 		var y = node.y;
 
-		if (node.isOpen)
-			return;
+		//if (node.isOpen)
+		//	return;
 
 		x--;
 		if ( insideBounds(x , y) )
 		{
 			var neighbour : MazeNode = m_maze.get( y * m_options.width + x );
-			openWall(node , neighbour);
-			makeDistinctNeighbourOpen(neighbour);
+			if (!neighbour.isOpen)
+			{
+				openWall(node , neighbour);
+				makeDistinctNeighbourOpen(neighbour);
+			}
 		}
 
 		x++;
@@ -112,8 +121,11 @@ class PrimsMaze
 		if ( insideBounds(x , y) )
 		{
 			var neighbour : MazeNode = m_maze.get( y * m_options.width + x );
-			openWall(node , neighbour);
-			makeDistinctNeighbourOpen(neighbour);
+			if (!neighbour.isOpen)
+			{
+				openWall(node , neighbour);
+				makeDistinctNeighbourOpen(neighbour);
+			}
 		}
 
 		y++;
@@ -121,8 +133,11 @@ class PrimsMaze
 		if ( insideBounds(x , y) )
 		{
 			var neighbour : MazeNode = m_maze.get( y * m_options.width + x );
-			openWall(node , neighbour);
-			makeDistinctNeighbourOpen(neighbour);
+			if (!neighbour.isOpen)
+			{
+				openWall(node , neighbour);
+				makeDistinctNeighbourOpen(neighbour);
+			}
 		}
 
 		y--;
@@ -130,17 +145,21 @@ class PrimsMaze
 		if ( insideBounds(x , y) )
 		{
 			var neighbour : MazeNode = m_maze.get( y * m_options.width + x );
-			openWall(node , neighbour);
-			makeDistinctNeighbourOpen(neighbour);
+			if (!neighbour.isOpen)
+			{
+				openWall(node , neighbour);
+				makeDistinctNeighbourOpen(neighbour);
+			}
 		}
 
-		node.isOpen = true;
+		//node.isOpen = true;
 	}
 
 	private function makeDistinctNeighbourOpen(node : MazeNode) : Void
 	{
 		m_openList.remove(node);
 		m_openList.push(node);
+		node.isOpen = true;
 	}
 
 	private function insideBounds(x : Int, y : Int) : Bool
