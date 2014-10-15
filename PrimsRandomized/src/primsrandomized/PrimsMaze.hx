@@ -96,6 +96,9 @@ class PrimsMaze
 		var x = node.x;
 		var y = node.y;
 
+		if (node.isOpen)
+			return;
+
 		x--;
 		if ( insideBounds(x , y) )
 		{
@@ -130,6 +133,8 @@ class PrimsMaze
 			openWall(node , neighbour);
 			makeDistinctNeighbourOpen(neighbour);
 		}
+
+		node.isOpen = true;
 	}
 
 	private function makeDistinctNeighbourOpen(node : MazeNode) : Void
