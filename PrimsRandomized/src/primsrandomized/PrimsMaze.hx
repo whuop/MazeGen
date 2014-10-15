@@ -14,12 +14,14 @@ typedef MazeNode =
 	left : Bool,
 	right : Bool,
 	x : Int,
-	y : Int
+	y : Int,
+	isOpen : Bool
 };
 
 class PrimsMaze
 {
 	private var m_openList : Array<MazeNode>;
+	private var m_closedList : Array<MazeNode>;
 	private var m_maze : Vector<MazeNode>;
 
 	private var m_options : PrimzMazeOptions;
@@ -30,12 +32,12 @@ class PrimsMaze
 		m_openList = new Array<MazeNode>();
 		m_maze = new Vector<MazeNode>(options.width * options.height);
 
-
+		//	Initialize the whole maze
 		for( x in 0...options.width )
 		{
 			for ( y in 0...options.height )
 			{
-				m_maze[y * options.width + x] = { up : false, down : false, left : false, right : false, x : x, y : y};
+				m_maze[y * options.width + x] = { up : false, down : false, left : false, right : false, x : x, y : y, isOpen : false};
 			}
 		}
 	}
@@ -45,14 +47,19 @@ class PrimsMaze
 		//	Get a random position to start the maze at.
 		var randomX : Int = Std.random(m_options.width);
 		var randomY : Int = Std.random(m_options.height);
-		makeNeighboursOpen(randomX, randomY);
+		var currNode : MazeNode = m_maze.get(randomY * m_options.width + randomX);
+		makeNeighboursOpen(currNode);
 
 		var i : Int = 0;
 		//	While there are still nodes to visit
 		while ( m_openList.length > 0)
 		{
 			//	Pick random node
-			var node = m_openList.remove(m_openList[Std.random(m_openList.length)]);
+			var randNodeNumber = Std.random(m_openList.length);
+			var node = m_openList[randNodeNumber];
+			m_openList.remove(node);
+
+			makeNeighboursOpen(node);
 
 
 			trace("I: " + i);
@@ -60,37 +67,75 @@ class PrimsMaze
 		}
 	}
 
-	private function openWall(ax : Int, ay : Int, bx : Int, by : Int) : Void
+	private function openWall(nodeA : MazeNode, nodeB : MazeNode) : Void
 	{
-
+		if ( nodeA.x < nodeB.x )
+		{
+			nodeA.right = true;
+			nodeB.left = true;
+		}
+		else if (  nodeA.x > nodeB.x )
+		{
+			nodeA.left = true;
+			nodeB.right = true;
+		}
+		else if ( nodeA.y < nodeB.y )
+		{
+			nodeA.down = true;
+			nodeB.up = true;
+		}
+		else if ( nodeA.y > nodeB.y )
+		{
+			nodeA.up = true;
+			nodeB.down = true;
+		}
 	}
 
-	private function makeNeighboursOpen(x : Int, y : Int) : Void
+	private function makeNeighboursOpen(node : MazeNode) : Void
 	{
+		var x = node.x;
+		var y = node.y;
+
 		x--;
 		if ( insideBounds(x , y) )
-			makeDistinctNeighbourOpen(x , y);
+		{
+			var neighbour : MazeNode = m_maze.get( y * m_options.width + x );
+			openWall(node , neighbour);
+			makeDistinctNeighbourOpen(neighbour);
+		}
 
 		x++;
 		y--;
 		if ( insideBounds(x , y) )
-			makeDistinctNeighbourOpen(x , y);
+		{
+			var neighbour : MazeNode = m_maze.get( y * m_options.width + x );
+			openWall(node , neighbour);
+			makeDistinctNeighbourOpen(neighbour);
+		}
 
 		y++;
 		y++;
 		if ( insideBounds(x , y) )
-			makeDistinctNeighbourOpen(x , y);
+		{
+			var neighbour : MazeNode = m_maze.get( y * m_options.width + x );
+			openWall(node , neighbour);
+			makeDistinctNeighbourOpen(neighbour);
+		}
 
 		y--;
 		x++;
 		if ( insideBounds(x , y) )
-			makeDistinctNeighbourOpen(x , y);
+		{
+			var neighbour : MazeNode = m_maze.get( y * m_options.width + x );
+			openWall(node , neighbour);
+			makeDistinctNeighbourOpen(neighbour);
+		}
 	}
 
-	private function makeDistinctNeighbourOpen(x : Int, y : Int) : Void
+	private function makeDistinctNeighbourOpen(node : MazeNode) : Void
 	{
-		m_openList.remove(m_maze[y * m_options.width + x]);
-		m_openList.push(m_maze[y * m_options.width + x]);
+		m_openList.remove(node);
+		m_openList.push(node);
 	}
 
 	private function insideBounds(x : Int, y : Int) : Bool
